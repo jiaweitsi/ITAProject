@@ -1,246 +1,257 @@
 import math
+import matplotlib.pyplot as plt
 
-# ==========================================
-# BASE DE DATOS DE AVIONES (Tabla Anexo B)
-# Copiada exactamente en sus unidades originales
-# ==========================================
-aviones={
-    'B767-300ER': {
-        'MLW_tons': 0.145150E+03,
-        'Max_Weight_tons': 0.20410E+03,
-        'Max_Payload_tons': 0.46500E+02,
-        'S': 0.28350E+03,
-        'CD0_app': 0.14000E-01,
-        'CD2_app': 0.49000E-01,
-        'CD0_clean': 0.17400E-01,
-        'CD2_clean': 0.45900E-01,
-        'hp_desc': 26418,
-        'CT_high': 0.64359E-1,
-        'CT_low': 0.55988E-1,
-        'CT_app': 0.12475,
-        'CT1': .35167E+06,
-        'CT2': .44673E+05,
-        'CT3': .10129E-09,
-        'CF1': .54005E+00,
-        'CF2': .55782E+03
-    },
-    'B777-300': {
-        'MLW_tons': 0.237680E+03,
-        'Max_Weight_tons': 0.29930E+03,
-        'Max_Payload_tons': 0.64900E+02,
-        'S': 0.42804E+03,
-        'CD0_app': 0.17300E-01,
-        'CD2_app': 0.48400E-01,
-        'CD0_clean': 0.15700E-01,
-        'CD2_clean': 0.42000E-01,
-        'hp_desc': 36122,
-        'CT_high': 0.44239E-1,
-        'CT_low': 0.41065E-1,
-        'CT_app': 0.92921E-1,
-        'CT1': .42577E+06,
-        'CT2': .48987E+05,
-        'CT3': .66146E-10,
-        'CF1': .87843E+00,
-        'CF2': .36897E+04
-    },
-    'B737': {
-        'MLW_tons': 0.51710E+02,
-        'Max_Weight_tons': 0.70800E+02,
-        'Max_Payload_tons': 0.16920E+02,
-        'S': 0.12465E+03,
-        'CD0_app': 0.27000E-01,
-        'CD2_app': 0.44100E-01,
-        'CD0_clean': 0.23500E-01,
-        'CD2_clean': 0.44500E-01,
-        'hp_desc': 30152,
-        'CT_high': 0.36336E-1,
-        'CT_low': 0.53395E-1,
-        'CT_app': 0.16440,
-        'CT1': .14573E+06,
-        'CT2': .55638E+05,
-        'CT3': .14200E-10,
-        'CF1': .94680E+00,
-        'CF2': .10000E+15
-    },
-    'A320-212': {
-        'MLW_tons': 0.64500E+02,
-        'Max_Weight_tons': 0.77000E+02,
-        'Max_Payload_tons': 0.21500E+02,
-        'S': 0.12260E+03,
-        'CD0_app': 0.24200E-01,
-        'CD2_app': 0.46900E-01,
-        'CD0_clean': 0.24000E-01,
-        'CD2_clean': 0.37500E-01,
-        'hp_desc': 12398,
-        'CT_high': 0.45711E-1,
-        'CT_low': 0.27207E-1,
-        'CT_app': 0.13981,
-        'CT1': .13605E+06,
-        'CT2': .52238E+05,
-        'CT3': .26637E-10,
-        'CF1': .94000E+00,
-        'CF2': .10000E+06
-    },
-    'A319-131': {
-        'MLW_tons': 0.61000E2,
-        'Max_Weight_tons': 0.70000E+02,
-        'Max_Payload_tons': 0.17000E+02,
-        'S': 0.12260E+03,
-        'CD0_app': 0.28400E-01,
-        'CD2_app': 0.37600E-01,
-        'CD0_clean': 0.28000E-01,
-        'CD2_clean': 0.31000E-01,
-        'hp_desc': 27726,
-        'CT_high': 0.83084E-1,
-        'CT_low': 0.51765E-1,
-        'CT_app': 0.14767,
-        'CT1': .13900E+06,
-        'CT2': .58900E+05,
-        'CT3': .57200E-14,
-        'CF1': .68800E+00,
-        'CF2': .16700E+04
-    }
-}
+# ==============================================================================
+# CLASE: Avion
+# ==============================================================================
+class Avion:
+    def __init__(self, nombre, mlw, s, cd0_limpio, cd2_limpio, cd0_app, cd2_app,
+                 hp_desc, ct_alto, ct_bajo, ct_app, ct1, ct2, ct3, cf1, cf2):
+        self.nombre = nombre          # Nombre identificador del modelo
+        self.mlw = mlw                # Maximum Landing Weight [kg]
+        self.s = s                    # Superficie alar [m^2]
+        self.cd0_limpio = cd0_limpio  # Coeficiente de resistencia parásita en limpio
+        self.cd2_limpio = cd2_limpio  # Coeficiente de resistencia inducida en limpio
+        self.cd0_app = cd0_app        # Coeficiente de resistencia parásita en aproximación
+        self.cd2_app = cd2_app        # Coeficiente de resistencia inducida en aproximación
+        self.hp_desc = hp_desc        # Altitud de transición de empuje de descenso [ft]
+        self.ct_alto = ct_alto        # Coeficiente de empuje idle en alta cota (hp > hp_desc)
+        self.ct_bajo = ct_bajo        # Coeficiente de empuje idle en baja cota (limpio)
+        self.ct_app = ct_app          # Coeficiente de empuje idle en configuración de aproximación
+        self.ct1 = ct1                # Parámetro de empuje máximo CT1 [N]
+        self.ct2 = ct2                # Parámetro de empuje máximo CT2 [ft]
+        self.ct3 = ct3                # Parámetro de empuje máximo CT3 [1/ft^2]
+        self.cf1 = cf1                # Coeficiente de consumo de combustible CF1 [kg/(min*kN)]
+        self.cf2 = cf2                # Coeficiente de velocidad para consumo CF2 [kt]
 
+# ==============================================================================
+# CONSTANTES FÍSICAS, DE ATMÓSFERA ISA Y FACTORES DE CONVERSIÓN
+# ==============================================================================
+GRAVEDAD = 9.80665        # Aceleración de la gravedad g0 [m/s^2]
+R_AIRE = 287.05287        # Constante del gas para el aire [J/(kg*K)]
+T0_ISA = 288.15           # Temperatura estándar al nivel del mar [K] (15 °C)
+P0_ISA = 101325.0         # Presión atmosférica al nivel del mar [Pa]
+GRADIENTE_TEMP = -0.0065  # Variación de temperatura con la altura beta [K/m]
+H_TROPOPAUSA = 11000.0    # Altura donde empieza la tropopausa [m]
 
-def atmosfera_isa(altitud_ft):
-    """
-    Calcula la densitat de l'aire (rho) segons el model ISA a una altitud dada en peus (ft).[cite: 1]
-    """
-    h_m = altitud_ft * 0.3048  # Convertir peus a metres
-
-    # Constants ISA
-    T0 = 288.15  # Temperatura a nivell del mar (K)
-    L = 0.0065  # Gradient tèrmic (K/m)
-    rho0 = 1.225  # Densitat a nivell del mar (kg/m^3)
-    g = 9.80665  # Gravetat (m/s^2)
-    R = 287.058  # Constant dels gasos (J/(kg·K))
-
-    T = T0 - L * h_m
-    rho = rho0 * (T / T0) ** ((g / (L * R)) - 1)
-
-    return rho
-
-
-def calcular_v_minrod(avion, peso_kg, rho, empuje_T):
-    """
-    Calcula la velocitat que minimitza el Rate of Descent (ROD)[cite: 3]
-    """
-    S = avion['S']
-    CD0 = avion['CD0_clean']  # Asumim configuració clean
-    CD2 = avion['CD2_clean']
-    g = 9.80665
-
-    # Aplicem la fórmula demostrada
-    numerador = empuje_T + math.sqrt(empuje_T ** 2 + 12 * CD0 * CD2 * (peso_kg * g) ** 2)
-    denominador = 3 * CD0 * rho * S
-
-    v_minrod = math.sqrt(numerador / denominador)  # Velocitat en m/s
-    return v_minrod
+PIES_A_METROS = 0.3048    # Multiplicar pies por esto para tener metros
+METROS_A_PIES = 1.0 / PIES_A_METROS # Multiplicar metros por esto para tener pies
+MS_A_NUDOS = 1.94384      # Conversión de m/s a nudos (kt)
 
 
 # ==============================================================================
-# 3. EMPUJE EN RALENTÍ (IDLE THRUST)
+# FUNCIONES AUXILIARES
 # ==============================================================================
-def calcular_empuje_idle(avion, hp_ft, config):
-    """
-    Calcula el empuje al ralentí T_desc (en Newtons) según las ecuaciones BADA[cite: 1]
-    """
-    CT1 = avion['CT1']
-    CT2 = avion['CT2']
-    CT3 = avion['CT3']
-
-    # Empuje máximo a la altitud actual[cite: 1]
-    T_max = CT1 * (1.0 - (hp_ft / CT2) + (CT3 * (hp_ft ** 2)))
-
-    # Empuje en ralentí según altitud y configuración[cite: 1]
-    if hp_ft > avion['hp_desc']:
-        T_desc = avion['CT_high'] * T_max
+def obtener_densidad_isa(h_m):
+    """Calcula la densidad del aire rho en función de la altura usando las constantes ISA."""
+    if h_m <= H_TROPOPAUSA:
+        T = T0_ISA + GRADIENTE_TEMP * h_m
+        exponente = -GRAVEDAD / (GRADIENTE_TEMP * R_AIRE)
+        p = P0_ISA * (T / T0_ISA) ** exponente
     else:
-        if config == 'clean':
-            T_desc = avion['CT_low'] * T_max
-        else:  # config == 'approach'
-            T_desc = avion['CT_app'] * T_max
+        T_trop = T0_ISA + GRADIENTE_TEMP * H_TROPOPAUSA
+        exponente = -GRAVEDAD / (GRADIENTE_TEMP * R_AIRE)
+        p_trop = P0_ISA * (T_trop / T0_ISA) ** exponente
+        T = T_trop
+        p = p_trop * math.exp(-GRAVEDAD * (h_m - H_TROPOPAUSA) / (R_AIRE * T))
 
-    return T_desc
+    return p / (R_AIRE * T)
+
+
+def obtener_empuje_idle(avion, hp_ft, es_aproximacion):
+    """Calcula el empuje idle (T_desc) en Newtons a partir de las formulas BADA."""
+    # Formula de T_max
+    t_max = avion.ct1 * (1.0 - (hp_ft / avion.ct2) + avion.ct3 * (hp_ft ** 2))
+    t_max = max(t_max, 0.0)
+
+    # Seleccion del factor reductor CT_desc
+    if hp_ft > avion.hp_desc:
+        ct = avion.ct_alto
+    else:
+        ct = avion.ct_app if es_aproximacion else avion.ct_bajo
+
+    return ct * t_max
 
 
 # ==============================================================================
-# 4. SIMULADOR DE TRAYECTORIA CDO
+# FUNCIÓN DE SIMULACIÓN CDO (HACIA ATRÁS DESDE EL IAF)
 # ==============================================================================
-def simular_cdo(nombre_avion, porcentaje_peso, altitud_inicial_ft=12000):
-    """
-    Simula el descenso continuo desde altitud_inicial_ft hasta 5,000 ft[cite: 1]
-    """
-    avion = aviones[nombre_avion]
+def simular_cdo(avion, porcentaje_mlw, h_max_m=12200.0, dt=1.0):
+    # Condiciones iniciales en IAF (x = 0, h = 6000 ft)
+    masa = (porcentaje_mlw / 100.0) * avion.mlw
+    h = 6000.0 * PIES_A_METROS
+    x = 0.0
+    t = 0.0
 
-    # Conversión: Toneladas de la tabla -> kilogramos dentro del cálculo
-    peso_kg = (porcentaje_peso / 100.0) * (avion['MLW_tons'] * 1000.0)
-    g = 9.80665
+    lista_x = [x]
+    lista_h = [h]
+    lista_t = [t]
+    lista_v = []
 
-    # Variables iniciales
-    h_ft = float(altitud_inicial_ft)
-    t = 0.0  # Tiempo acumulado (segundos)
-    dt = 1.0  # Paso del bucle (1 segundo)
-    distancia_m = 0.0  # Distancia horizontal recorrida (metros)
+    while h < h_max_m:
+        hp_ft = h * METROS_A_PIES
+        es_aproximacion = (hp_ft <= 6000.0)
 
-    # Historial para guardar datos
-    historial_t = []
-    historial_h = []
+        # Seleccion de coeficientes segun si lleva flaps (<= 6000 ft) o limpio
+        cd0 = avion.cd0_app if es_aproximacion else avion.cd0_limpio
+        cd2 = avion.cd2_app if es_aproximacion else avion.cd2_limpio
 
-    # BUCLE DE SIMULACIÓN HASTA LLEGAR AL IAF (6000[cite: 1]
-    while h_ft > 6000:
-        # Selección de clave según la altitud (Transición a Approach a 6000 ft)[cite: 1]
-        config_key = 'app' if h_ft <= 6000 else 'clean'
-        config_idle = 'approach' if h_ft <= 6000 else 'clean'
+        rho = obtener_densidad_isa(h)
 
-        # 1. Densidad del aire[cite: 1]
-        rho = atmosfera_isa(h_ft)
+        # Formula de v_minRoD
+        num = 4.0 * cd2 * ((masa * GRAVEDAD) ** 2)
+        den = 3.0 * (rho ** 2) * (avion.s ** 2) * cd0
+        v = (num / den) ** 0.25
+        lista_v.append(v)
 
-        # 2. Empuje al ralentí[cite: 1]
-        T = calcular_empuje_idle(avion, h_ft, config_idle)
+        # A. Formulas de CL, CD y Resistencia D
+        cl = (2.0 * masa * GRAVEDAD) / (rho * (v ** 2) * avion.s)
+        cd = cd0 + cd2 * (cl ** 2)
+        resistencia = 0.5 * rho * (v ** 2) * avion.s * cd
+        empuje = obtener_empuje_idle(avion, hp_ft, es_aproximacion)
 
-        # 3. Datos aerodinámicos
-        S = avion['S']
-        CD0 = avion[f'CD0_{config_key}']
-        CD2 = avion[f'CD2_{config_key}']
+        # B. Formulas de RoD y gamma
+        rod = v * (resistencia - empuje) / (masa * GRAVEDAD)
+        if rod <= 0:
+            rod = 0.1
 
-        # 4. Cálculo de V_minROD (Fórmula analítica derivada)[cite: 3]
-        num = T + math.sqrt(T ** 2 + 12 * CD0 * CD2 * (peso_kg * g) ** 2)
-        den = 3 * CD0 * rho * S
-        v_m_s = math.sqrt(num / den)
+        sin_gamma = max(min(rod / v, 1.0), -1.0)
+        gamma = math.asin(sin_gamma)
 
-        # 5. Resistencia (D) y Rate of Descent (ROD)[cite: 1, 3]
-        CL = (2 * peso_kg * g) / (rho * (v_m_s ** 2) * S)
-        CD = CD0 + CD2 * (CL ** 2)
-        D = 0.5 * rho * (v_m_s ** 2) * S * CD
+        # C. Formula de flujo de combustible FF
+        v_nudos = v * MS_A_NUDOS
+        eta = avion.cf1 * (1.0 + v_nudos / avion.cf2)
+        flujo_combustible = eta * (empuje / 1000.0) / 60.0
 
-        rod_m_s = ((D - T) * v_m_s) / (peso_kg * g)
-        rod_ft_s = rod_m_s / 0.3048  # Convertir m/s a ft/s
-
-        # Guardar distancia horizontal recorrida
-        distancia_m += v_m_s * dt
-
-        # Guardar datos en el historial
-        historial_t.append(t)
-        historial_h.append(h_ft)
-
-        # Actualizar valores para el siguiente segundo
-        h_ft -= rod_ft_s * dt
+        # D. Integracion hacia atras en el tiempo
+        h += rod * dt
+        x -= v * math.cos(gamma) * dt
+        masa += flujo_combustible * dt
         t += dt
 
-    distancia_NM = distancia_m / 1852.0  # Convertir metros a Millas Náuticas (NM)
-    return t, distancia_NM, historial_t, historial_h
+        lista_x.append(x)
+        lista_h.append(h)
+        lista_t.append(t)
+
+    lista_v.append(lista_v[-1])
+    return lista_x, lista_h, lista_t, lista_v
 
 
 # ==============================================================================
-# 5. BLOQUE DE PRUEBA (EJECUCIÓN)
+# SCRIPT PRINCIPAL: LISTA DE AVIONES DOCUMENTADA Y GRÁFICO
 # ==============================================================================
 if __name__ == '__main__':
-    print("--- RESULTADOS DE SIMULACIÓN DESDE 12.000 ft HASTA6000ft6 ft ---")
+    # Lista de aeronaves con cada parámetro documentado según los datos BADA del SoW
+    lista_aviones = [
+        Avion(
+            nombre='B767-300ER',
+            mlw=145150.0,             # Max Landing Weight: 145.15 toneladas = 145150 kg
+            s=283.5,                  # Superficie alar S = 283.5 m^2
+            cd0_limpio=0.0174,        # CD0 en limpio
+            cd2_limpio=0.0420,        # CD2 en limpio
+            cd0_app=0.0140,           # CD0 en aproximación
+            cd2_app=0.0490,           # CD2 en aproximación
+            hp_desc=30152.0,          # Altitud de transición hp_desc = 30152 ft
+            ct_alto=0.045711,         # CT_desc,high = 0.045711
+            ct_bajo=0.055988,         # CT_desc,low = 0.055988
+            ct_app=0.13981,           # CT_desc,app = 0.13981
+            ct1=351670.0,             # CT1 = 0.35167E+06 N
+            ct2=44673.0,              # CT2 = 0.44673E+05 ft
+            ct3=0.26637e-10,          # CT3 = 0.26637E-10 1/ft^2
+            cf1=0.54005,              # CF1 = 0.54005 kg/(min*kN)
+            cf2=557.82                # CF2 = 557.82 kt
+        ),
+        Avion(
+            nombre='B777-300',
+            mlw=237680.0,             # Max Landing Weight: 237.68 toneladas = 237680 kg
+            s=428.04,                 # Superficie alar S = 428.04 m^2
+            cd0_limpio=0.0157,        # CD0 en limpio
+            cd2_limpio=0.0445,        # CD2 en limpio
+            cd0_app=0.0173,           # CD0 en aproximación
+            cd2_app=0.0484,           # CD2 en aproximación
+            hp_desc=36122.0,          # Altitud de transición hp_desc = 36122 ft
+            ct_alto=0.064359,         # CT_desc,high = 0.064359
+            ct_bajo=0.041065,         # CT_desc,low = 0.041065
+            ct_app=0.14767,           # CT_desc,app = 0.14767
+            ct1=425770.0,             # CT1 = 0.42577E+06 N
+            ct2=48987.0,              # CT2 = 0.48987E+05 ft
+            ct3=0.57200e-14,          # CT3 = 0.57200E-14 1/ft^2
+            cf1=0.87843,              # CF1 = 0.87843 kg/(min*kN)
+            cf2=3689.7                # CF2 = 3689.7 kt
+        ),
+        Avion(
+            nombre='B737',
+            mlw=51710.0,              # Max Landing Weight: 51.71 toneladas = 51710 kg
+            s=124.65,                 # Superficie alar S = 124.65 m^2
+            cd0_limpio=0.0235,        # CD0 en limpio
+            cd2_limpio=0.0375,        # CD2 en limpio
+            cd0_app=0.0270,           # CD0 en aproximación
+            cd2_app=0.0441,           # CD2 en aproximación
+            hp_desc=26418.0,          # Altitud de transición hp_desc = 26418 ft
+            ct_alto=0.044239,         # CT_desc,high = 0.044239
+            ct_bajo=0.053395,         # CT_desc,low = 0.053395
+            ct_app=0.16440,           # CT_desc,app = 0.16440
+            ct1=145730.0,             # CT1 = 0.14573E+06 N
+            ct2=58900.0,              # CT2 = 0.58900E+05 ft
+            ct3=0.66146e-10,          # CT3 = 0.66146E-10 1/ft^2
+            cf1=0.94680,              # CF1 = 0.94680 kg/(min*kN)
+            cf2=1.0e15                # CF2 = 0.10000E+15 kt
+        ),
+        Avion(
+            nombre='A320-212',
+            mlw=64500.0,              # Max Landing Weight: 64.50 toneladas = 64500 kg
+            s=122.60,                 # Superficie alar S = 122.60 m^2
+            cd0_limpio=0.0240,        # CD0 en limpio
+            cd2_limpio=0.0310,        # CD2 en limpio
+            cd0_app=0.0242,           # CD0 en aproximación
+            cd2_app=0.0469,           # CD2 en aproximación
+            hp_desc=12398.0,          # Altitud de transición hp_desc = 12398 ft
+            ct_alto=0.036336,         # CT_desc,high = 0.036336
+            ct_bajo=0.027207,         # CT_desc,low = 0.027207
+            ct_app=0.09292,           # CT_desc,app = 0.09292
+            ct1=136050.0,             # CT1 = 0.13605E+06 N
+            ct2=55638.0,              # CT2 = 0.55638E+05 ft
+            ct3=0.14200e-10,          # CT3 = 0.14200E-10 1/ft^2
+            cf1=0.94000,              # CF1 = 0.94000 kg/(min*kN)
+            cf2=1.0e6                 # CF2 = 0.10000E+06 kt
+        ),
+        Avion(
+            nombre='A319-131',
+            mlw=61000.0,              # Max Landing Weight: 61.00 toneladas = 61000 kg
+            s=122.60,                 # Superficie alar S = 122.60 m^2
+            cd0_limpio=0.0280,        # CD0 en limpio
+            cd2_limpio=0.0459,        # CD2 en limpio
+            cd0_app=0.0284,           # CD0 en aproximación
+            cd2_app=0.0376,           # CD2 en aproximación
+            hp_desc=27726.0,          # Altitud de transición hp_desc = 27726 ft
+            ct_alto=0.083084,         # CT_desc,high = 0.083084
+            ct_bajo=0.051765,         # CT_desc,low = 0.051765
+            ct_app=0.12475,           # CT_desc,app = 0.12475
+            ct1=139000.0,             # CT1 = 0.13900E+06 N
+            ct2=52238.0,              # CT2 = 0.52238E+05 ft
+            ct3=0.10129e-09,          # CT3 = 0.10129E-09 1/ft^2
+            cf1=0.68800,              # CF1 = 0.68800 kg/(min*kN)
+            cf2=1670.0                # CF2 = 1670.0 kt
+        )
+    ]
 
-    # Simulamos todos los aviones al 100% de su MLW
-    for nombre in aviones:
-        tiempo_s, dist_nm, t_hist, h_hist = simular_cdo(nombre, porcentaje_peso=100, altitud_inicial_ft=12000)
-        minutos = tiempo_s / 60.0
-        print(f"Avión {nombre:10s} -> Tiempo: {minutos:5.2f} min ({tiempo_s:3.0f} s) | Distancia: {dist_nm:5.2f} NM")
+    # Porcentajes de peso al IAF a estudiar (100% y 80% MLW)
+    porcentajes_mlw = [100, 80]
+
+    # Generación y formato del gráfico
+    plt.figure(figsize=(11, 6))
+
+    for avion in lista_aviones:
+        for porcentaje in porcentajes_mlw: # Evalua los dos pesos pedidos (100% y 80%)
+            x_pts, h_pts, _, _ = simular_cdo(avion, porcentaje) # Cogemos las 2 listas que nos interesan para el gráfico (distancia y altura)
+            plt.plot(x_pts, h_pts, label=f"{avion.nombre} [{porcentaje}% MLW]", linewidth=1.2)
+
+    plt.title("Perfiles de Descenso Continuo (CDO) al IAF (x = 0 m, h = 6000 ft)")
+    plt.xlabel("x [m]")
+    plt.ylabel("h [m]")
+    plt.xlim(-220000, 5000)
+    plt.ylim(1000, 13000)
+    plt.grid(True, linestyle="--", alpha=0.5)
+    plt.legend(loc="upper right", fontsize=8)
+    plt.tight_layout()
+    plt.show()
