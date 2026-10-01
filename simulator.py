@@ -145,95 +145,96 @@ if __name__ == '__main__':
     lista_aviones = [
         Avion(
             nombre='B767-300ER',
-            mlw=145150.0,             # Max Landing Weight: 145.15 toneladas = 145150 kg
-            s=283.5,                  # Superficie alar S = 283.5 m^2
-            cd0_limpio=0.0174,        # CD0 en limpio
-            cd2_limpio=0.0420,        # CD2 en limpio
-            cd0_app=0.0140,           # CD0 en aproximación
-            cd2_app=0.0490,           # CD2 en aproximación
-            hp_desc=30152.0,          # Altitud de transición hp_desc = 30152 ft
-            ct_alto=0.045711,         # CT_desc,high = 0.045711
-            ct_bajo=0.055988,         # CT_desc,low = 0.055988
-            ct_app=0.13981,           # CT_desc,app = 0.13981
-            ct1=351670.0,             # CT1 = 0.35167E+06 N
-            ct2=44673.0,              # CT2 = 0.44673E+05 ft
-            ct3=0.26637e-10,          # CT3 = 0.26637E-10 1/ft^2
-            cf1=0.54005,              # CF1 = 0.54005 kg/(min*kN)
-            cf2=557.82                # CF2 = 557.82 kt
+            mlw=145150.0,  # 0.145150E+03 tons -> kg
+            s=283.50,  # 0.28350E+03 m^2
+            cd0_limpio=0.0174,  # CD0,clean: 0.17400E-01
+            cd2_limpio=0.0459,  # CD2,clean: 0.45900E-01
+            cd0_app=0.0140,  # CD0,app: 0.14000E-01
+            cd2_app=0.0490,  # CD2,app: 0.49000E-01
+            hp_desc=26418.0,  # hp,desc: 26418 ft
+            ct_alto=0.064359,  # CTDesc,high: 0.64359E-1
+            ct_bajo=0.055988,  # CTDesc,low: 0.55988E-1
+            ct_app=0.12475,  # CTDesc,app: 0.12475
+            ct1=351670.0,  # CT1: .35167E+06 N
+            ct2=44673.0,  # CT2: .44673E+05 ft
+            ct3=0.10129e-09,  # CT3: .10129E-09 1/ft^2
+            cf1=0.54005,  # CF1: .54005E+00 kg/(min*kN)
+            cf2=557.82  # CF2: .55782E+03 kt
         ),
         Avion(
             nombre='B777-300',
-            mlw=237680.0,             # Max Landing Weight: 237.68 toneladas = 237680 kg
-            s=428.04,                 # Superficie alar S = 428.04 m^2
-            cd0_limpio=0.0157,        # CD0 en limpio
-            cd2_limpio=0.0445,        # CD2 en limpio
-            cd0_app=0.0173,           # CD0 en aproximación
-            cd2_app=0.0484,           # CD2 en aproximación
-            hp_desc=36122.0,          # Altitud de transición hp_desc = 36122 ft
-            ct_alto=0.064359,         # CT_desc,high = 0.064359
-            ct_bajo=0.041065,         # CT_desc,low = 0.041065
-            ct_app=0.14767,           # CT_desc,app = 0.14767
-            ct1=425770.0,             # CT1 = 0.42577E+06 N
-            ct2=48987.0,              # CT2 = 0.48987E+05 ft
-            ct3=0.57200e-14,          # CT3 = 0.57200E-14 1/ft^2
-            cf1=0.87843,              # CF1 = 0.87843 kg/(min*kN)
-            cf2=3689.7                # CF2 = 3689.7 kt
+            mlw=237680.0,  # 0.237680E+03 tons -> kg
+            s=428.04,  # 0.42804E+03 m^2
+            cd0_limpio=0.0157,  # CD0,clean: 0.15700E-01
+            cd2_limpio=0.0420,  # CD2,clean: 0.42000E-01
+            cd0_app=0.0173,  # CD0,app: 0.17300E-01
+            cd2_app=0.0484,  # CD2,app: 0.48400E-01
+            hp_desc=36122.0,  # hp,desc: 36122 ft
+            ct_alto=0.044239,  # CTDesc,high: 0.44239E-1
+            ct_bajo=0.041065,  # CTDesc,low: 0.41065E-1
+            ct_app=0.092921,  # CTDesc,app: 0.92921E-1
+            ct1=425770.0,  # CT1: .42577E+06 N
+            ct2=48987.0,  # CT2: .48987E+05 ft
+            ct3=0.66146e-10,  # CT3: .66146E-10 1/ft^2
+            cf1=0.87843,  # CF1: .87843E+00 kg/(min*kN)
+            cf2=3689.7  # CF2: .36897E+04 kt
         ),
         Avion(
             nombre='B737',
-            mlw=51710.0,              # Max Landing Weight: 51.71 toneladas = 51710 kg
-            s=124.65,                 # Superficie alar S = 124.65 m^2
-            cd0_limpio=0.0235,        # CD0 en limpio
-            cd2_limpio=0.0375,        # CD2 en limpio
-            cd0_app=0.0270,           # CD0 en aproximación
-            cd2_app=0.0441,           # CD2 en aproximación
-            hp_desc=26418.0,          # Altitud de transición hp_desc = 26418 ft
-            ct_alto=0.044239,         # CT_desc,high = 0.044239
-            ct_bajo=0.053395,         # CT_desc,low = 0.053395
-            ct_app=0.16440,           # CT_desc,app = 0.16440
-            ct1=145730.0,             # CT1 = 0.14573E+06 N
-            ct2=58900.0,              # CT2 = 0.58900E+05 ft
-            ct3=0.66146e-10,          # CT3 = 0.66146E-10 1/ft^2
-            cf1=0.94680,              # CF1 = 0.94680 kg/(min*kN)
-            cf2=1.0e15                # CF2 = 0.10000E+15 kt
+            mlw=51710.0,  # 0.51710E+02 tons -> kg
+            s=124.65,  # 0.12465E+03 m^2
+            cd0_limpio=0.0235,  # CD0,clean: 0.23500E-01
+            cd2_limpio=0.0445,  # CD2,clean: 0.44500E-01
+            cd0_app=0.0270,  # CD0,app: 0.27000E-01
+            cd2_app=0.0441,  # CD2,app: 0.44100E-01
+            hp_desc=30152.0,  # hp,desc: 30152 ft
+            ct_alto=0.036336,  # CTDesc,high: 0.36336E-1
+            ct_bajo=0.053395,  # CTDesc,low: 0.53395E-1
+            ct_app=0.16440,  # CTDesc,app: 0.16440
+            ct1=145730.0,  # CT1: .14573E+06 N
+            ct2=55638.0,  # CT2: .55638E+05 ft
+            ct3=0.14200e-10,  # CT3: .14200E-10 1/ft^2
+            cf1=0.94680,  # CF1: .94680E+00 kg/(min*kN)
+            cf2=1.0e14  # CF2: .10000E+15 kt
         ),
         Avion(
             nombre='A320-212',
-            mlw=64500.0,              # Max Landing Weight: 64.50 toneladas = 64500 kg
-            s=122.60,                 # Superficie alar S = 122.60 m^2
-            cd0_limpio=0.0240,        # CD0 en limpio
-            cd2_limpio=0.0310,        # CD2 en limpio
-            cd0_app=0.0242,           # CD0 en aproximación
-            cd2_app=0.0469,           # CD2 en aproximación
-            hp_desc=12398.0,          # Altitud de transición hp_desc = 12398 ft
-            ct_alto=0.036336,         # CT_desc,high = 0.036336
-            ct_bajo=0.027207,         # CT_desc,low = 0.027207
-            ct_app=0.09292,           # CT_desc,app = 0.09292
-            ct1=136050.0,             # CT1 = 0.13605E+06 N
-            ct2=55638.0,              # CT2 = 0.55638E+05 ft
-            ct3=0.14200e-10,          # CT3 = 0.14200E-10 1/ft^2
-            cf1=0.94000,              # CF1 = 0.94000 kg/(min*kN)
-            cf2=1.0e6                 # CF2 = 0.10000E+06 kt
+            mlw=64500.0,  # 0.64500E+02 tons -> kg
+            s=122.60,  # 0.12260E+03 m^2
+            cd0_limpio=0.0240,  # CD0,clean: 0.24000E-01
+            cd2_limpio=0.0375,  # CD2,clean: 0.37500E-01
+            cd0_app=0.0242,  # CD0,app: 0.24200E-01
+            cd2_app=0.0469,  # CD2,app: 0.46900E-01
+            hp_desc=12398.0,  # hp,desc: 12398 ft
+            ct_alto=0.045711,  # CTDesc,high: 0.45711E-1
+            ct_bajo=0.027207,  # CTDesc,low: 0.27207E-1
+            ct_app=0.13981,  # CTDesc,app: 0.13981
+            ct1=136050.0,  # CT1: .13605E+06 N
+            ct2=52238.0,  # CT2: .52238E+05 ft
+            ct3=0.26637e-10,  # CT3: .26637E-10 1/ft^2
+            cf1=0.94000,  # CF1: .94000E+00 kg/(min*kN)
+            cf2=1.0e5  # CF2: .10000E+06 kt
         ),
         Avion(
             nombre='A319-131',
-            mlw=61000.0,              # Max Landing Weight: 61.00 toneladas = 61000 kg
-            s=122.60,                 # Superficie alar S = 122.60 m^2
-            cd0_limpio=0.0280,        # CD0 en limpio
-            cd2_limpio=0.0459,        # CD2 en limpio
-            cd0_app=0.0284,           # CD0 en aproximación
-            cd2_app=0.0376,           # CD2 en aproximación
-            hp_desc=27726.0,          # Altitud de transición hp_desc = 27726 ft
-            ct_alto=0.083084,         # CT_desc,high = 0.083084
-            ct_bajo=0.051765,         # CT_desc,low = 0.051765
-            ct_app=0.12475,           # CT_desc,app = 0.12475
-            ct1=139000.0,             # CT1 = 0.13900E+06 N
-            ct2=52238.0,              # CT2 = 0.52238E+05 ft
-            ct3=0.10129e-09,          # CT3 = 0.10129E-09 1/ft^2
-            cf1=0.68800,              # CF1 = 0.68800 kg/(min*kN)
-            cf2=1670.0                # CF2 = 1670.0 kt
+            mlw=61000.0,  # 0.61000E2 tons -> kg
+            s=122.60,  # 0.12260E+03 m^2
+            cd0_limpio=0.0280,  # CD0,clean: 0.28000E-01
+            cd2_limpio=0.0310,  # CD2,clean: 0.31000E-01
+            cd0_app=0.0284,  # CD0,app: 0.28400E-01
+            cd2_app=0.0376,  # CD2,app: 0.37600E-01
+            hp_desc=27726.0,  # hp,desc: 27726 ft
+            ct_alto=0.083084,  # CTDesc,high: 0.83084E-1
+            ct_bajo=0.051765,  # CTDesc,low: 0.51765E-1
+            ct_app=0.14767,  # CTDesc,app: 0.14767
+            ct1=139000.0,  # CT1: .13900E+06 N
+            ct2=58900.0,  # CT2: .58900E+05 ft
+            ct3=0.57200e-14,  # CT3: .57200E-14 1/ft^2
+            cf1=0.68800,  # CF1: .68800E+00 kg/(min*kN)
+            cf2=1670.0  # CF2: .16700E+04 kt
         )
     ]
+
 
     # Porcentajes de peso al IAF a estudiar (100% y 80% MLW)
     porcentajes_mlw = [100, 80]
