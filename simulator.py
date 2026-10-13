@@ -60,7 +60,7 @@ def obtener_densidad_isa(h_m):
 
 def obtener_empuje_idle(avion, hp_ft, es_aproximacion):
     """Calcula el empuje idle (T_desc) en Newtons a partir de las formulas BADA."""
-    # Formula de T_max
+    # Formula de T_max corregida (con el signo menos)
     t_max = avion.ct1 * (1.0 - (hp_ft / avion.ct2) + avion.ct3 * (hp_ft ** 2))
     t_max = max(t_max, 0.0)
 
@@ -77,9 +77,10 @@ def obtener_empuje_idle(avion, hp_ft, es_aproximacion):
 # FUNCIÓN DE SIMULACIÓN CDO (HACIA ATRÁS DESDE EL IAF)
 # ==============================================================================
 def simular_cdo(avion, porcentaje_mlw, h_max_m=12200.0, dt=1.0):
-    # Condiciones iniciales en IAF (x = 0, h = 6000 ft)
+    # Condiciones iniciales en IAF (x = 0, h = 6000 ft) corregida con '*'
     masa = (porcentaje_mlw / 100.0) * avion.mlw
     h = 6000.0 * PIES_A_METROS
+
     x = 0.0
     t = 0.0
 
@@ -98,13 +99,13 @@ def simular_cdo(avion, porcentaje_mlw, h_max_m=12200.0, dt=1.0):
 
         rho = obtener_densidad_isa(h)
 
-        # Formula de v_minRoD
+        # Formula de v_minRoD corregida con '*'
         num = 4.0 * cd2 * ((masa * GRAVEDAD) ** 2)
         den = 3.0 * (rho ** 2) * (avion.s ** 2) * cd0
         v = (num / den) ** 0.25
         lista_v.append(v)
 
-        # A. Formulas de CL, CD y Resistencia D
+        # Formulas corregidas con '*'
         cl = (2.0 * masa * GRAVEDAD) / (rho * (v ** 2) * avion.s)
         cd = cd0 + cd2 * (cl ** 2)
         resistencia = 0.5 * rho * (v ** 2) * avion.s * cd
@@ -136,115 +137,113 @@ def simular_cdo(avion, porcentaje_mlw, h_max_m=12200.0, dt=1.0):
     lista_v.append(lista_v[-1])
     return lista_x, lista_h, lista_t, lista_v
 
+# ==============================================================================
+# BASE DE DATOS DE AVIONES
+# ==============================================================================
+lista_aviones = [
+    Avion(
+        nombre='B767-300ER',
+        mlw=145150.0,
+        s=283.50,
+        cd0_limpio=0.0174,
+        cd2_limpio=0.0459,
+        cd0_app=0.0140,
+        cd2_app=0.0490,
+        hp_desc=26418.0,
+        ct_alto=0.064359,
+        ct_bajo=0.055988,
+        ct_app=0.12475,
+        ct1=351670.0,
+        ct2=44673.0,
+        ct3=0.10129e-09,
+        cf1=0.54005,
+        cf2=557.82
+    ),
+    Avion(
+        nombre='B777-300',
+        mlw=237680.0,
+        s=428.04,
+        cd0_limpio=0.0157,
+        cd2_limpio=0.0420,
+        cd0_app=0.0173,
+        cd2_app=0.0484,
+        hp_desc=36122.0,
+        ct_alto=0.044239,
+        ct_bajo=0.041065,
+        ct_app=0.092921,
+        ct1=425770.0,
+        ct2=48987.0,
+        ct3=0.66146e-10,
+        cf1=0.87843,
+        cf2=3689.7
+    ),
+    Avion(
+        nombre='B737',
+        mlw=51710.0,
+        s=124.65,
+        cd0_limpio=0.0235,
+        cd2_limpio=0.0445,
+        cd0_app=0.0270,
+        cd2_app=0.0441,
+        hp_desc=30152.0,
+        ct_alto=0.036336,
+        ct_bajo=0.053395,
+        ct_app=0.16440,
+        ct1=145730.0,
+        ct2=55638.0,
+        ct3=0.14200e-10,
+        cf1=0.94680,
+        cf2=1.0e14
+    ),
+    Avion(
+        nombre='A320-212',
+        mlw=64500.0,
+        s=122.60,
+        cd0_limpio=0.0240,
+        cd2_limpio=0.0375,
+        cd0_app=0.0242,
+        cd2_app=0.0469,
+        hp_desc=12398.0,
+        ct_alto=0.045711,
+        ct_bajo=0.027207,
+        ct_app=0.13981,
+        ct1=136050.0,
+        ct2=52238.0,
+        ct3=0.26637e-10,
+        cf1=0.94000,
+        cf2=1.0e5
+    ),
+    Avion(
+        nombre='A319-131',
+        mlw=61000.0,
+        s=122.60,
+        cd0_limpio=0.0280,
+        cd2_limpio=0.0310,
+        cd0_app=0.0284,
+        cd2_app=0.0376,
+        hp_desc=27726.0,
+        ct_alto=0.083084,
+        ct_bajo=0.051765,
+        ct_app=0.14767,
+        ct1=139000.0,
+        ct2=58900.0,
+        ct3=0.57200e-14,
+        cf1=0.68800,
+        cf2=1670.0
+    )
+]
 
 # ==============================================================================
-# SCRIPT PRINCIPAL: LISTA DE AVIONES DOCUMENTADA Y GRÁFICO
+# SCRIPT PRINCIPAL: SÓLO DIBUJA AL EJECUTAR SIMULATOR DIRECTAMENTE
 # ==============================================================================
 if __name__ == '__main__':
-    # Lista de aeronaves con cada parámetro documentado según los datos BADA del SoW
-    lista_aviones = [
-        Avion(
-            nombre='B767-300ER',
-            mlw=145150.0,  # 0.145150E+03 tons -> kg
-            s=283.50,  # 0.28350E+03 m^2
-            cd0_limpio=0.0174,  # CD0,clean: 0.17400E-01
-            cd2_limpio=0.0459,  # CD2,clean: 0.45900E-01
-            cd0_app=0.0140,  # CD0,app: 0.14000E-01
-            cd2_app=0.0490,  # CD2,app: 0.49000E-01
-            hp_desc=26418.0,  # hp,desc: 26418 ft
-            ct_alto=0.064359,  # CTDesc,high: 0.64359E-1
-            ct_bajo=0.055988,  # CTDesc,low: 0.55988E-1
-            ct_app=0.12475,  # CTDesc,app: 0.12475
-            ct1=351670.0,  # CT1: .35167E+06 N
-            ct2=44673.0,  # CT2: .44673E+05 ft
-            ct3=0.10129e-09,  # CT3: .10129E-09 1/ft^2
-            cf1=0.54005,  # CF1: .54005E+00 kg/(min*kN)
-            cf2=557.82  # CF2: .55782E+03 kt
-        ),
-        Avion(
-            nombre='B777-300',
-            mlw=237680.0,  # 0.237680E+03 tons -> kg
-            s=428.04,  # 0.42804E+03 m^2
-            cd0_limpio=0.0157,  # CD0,clean: 0.15700E-01
-            cd2_limpio=0.0420,  # CD2,clean: 0.42000E-01
-            cd0_app=0.0173,  # CD0,app: 0.17300E-01
-            cd2_app=0.0484,  # CD2,app: 0.48400E-01
-            hp_desc=36122.0,  # hp,desc: 36122 ft
-            ct_alto=0.044239,  # CTDesc,high: 0.44239E-1
-            ct_bajo=0.041065,  # CTDesc,low: 0.41065E-1
-            ct_app=0.092921,  # CTDesc,app: 0.92921E-1
-            ct1=425770.0,  # CT1: .42577E+06 N
-            ct2=48987.0,  # CT2: .48987E+05 ft
-            ct3=0.66146e-10,  # CT3: .66146E-10 1/ft^2
-            cf1=0.87843,  # CF1: .87843E+00 kg/(min*kN)
-            cf2=3689.7  # CF2: .36897E+04 kt
-        ),
-        Avion(
-            nombre='B737',
-            mlw=51710.0,  # 0.51710E+02 tons -> kg
-            s=124.65,  # 0.12465E+03 m^2
-            cd0_limpio=0.0235,  # CD0,clean: 0.23500E-01
-            cd2_limpio=0.0445,  # CD2,clean: 0.44500E-01
-            cd0_app=0.0270,  # CD0,app: 0.27000E-01
-            cd2_app=0.0441,  # CD2,app: 0.44100E-01
-            hp_desc=30152.0,  # hp,desc: 30152 ft
-            ct_alto=0.036336,  # CTDesc,high: 0.36336E-1
-            ct_bajo=0.053395,  # CTDesc,low: 0.53395E-1
-            ct_app=0.16440,  # CTDesc,app: 0.16440
-            ct1=145730.0,  # CT1: .14573E+06 N
-            ct2=55638.0,  # CT2: .55638E+05 ft
-            ct3=0.14200e-10,  # CT3: .14200E-10 1/ft^2
-            cf1=0.94680,  # CF1: .94680E+00 kg/(min*kN)
-            cf2=1.0e14  # CF2: .10000E+15 kt
-        ),
-        Avion(
-            nombre='A320-212',
-            mlw=64500.0,  # 0.64500E+02 tons -> kg
-            s=122.60,  # 0.12260E+03 m^2
-            cd0_limpio=0.0240,  # CD0,clean: 0.24000E-01
-            cd2_limpio=0.0375,  # CD2,clean: 0.37500E-01
-            cd0_app=0.0242,  # CD0,app: 0.24200E-01
-            cd2_app=0.0469,  # CD2,app: 0.46900E-01
-            hp_desc=12398.0,  # hp,desc: 12398 ft
-            ct_alto=0.045711,  # CTDesc,high: 0.45711E-1
-            ct_bajo=0.027207,  # CTDesc,low: 0.27207E-1
-            ct_app=0.13981,  # CTDesc,app: 0.13981
-            ct1=136050.0,  # CT1: .13605E+06 N
-            ct2=52238.0,  # CT2: .52238E+05 ft
-            ct3=0.26637e-10,  # CT3: .26637E-10 1/ft^2
-            cf1=0.94000,  # CF1: .94000E+00 kg/(min*kN)
-            cf2=1.0e5  # CF2: .10000E+06 kt
-        ),
-        Avion(
-            nombre='A319-131',
-            mlw=61000.0,  # 0.61000E2 tons -> kg
-            s=122.60,  # 0.12260E+03 m^2
-            cd0_limpio=0.0280,  # CD0,clean: 0.28000E-01
-            cd2_limpio=0.0310,  # CD2,clean: 0.31000E-01
-            cd0_app=0.0284,  # CD0,app: 0.28400E-01
-            cd2_app=0.0376,  # CD2,app: 0.37600E-01
-            hp_desc=27726.0,  # hp,desc: 27726 ft
-            ct_alto=0.083084,  # CTDesc,high: 0.83084E-1
-            ct_bajo=0.051765,  # CTDesc,low: 0.51765E-1
-            ct_app=0.14767,  # CTDesc,app: 0.14767
-            ct1=139000.0,  # CT1: .13900E+06 N
-            ct2=58900.0,  # CT2: .58900E+05 ft
-            ct3=0.57200e-14,  # CT3: .57200E-14 1/ft^2
-            cf1=0.68800,  # CF1: .68800E+00 kg/(min*kN)
-            cf2=1670.0  # CF2: .16700E+04 kt
-        )
-    ]
-
-
-    # Porcentajes de peso al IAF a estudiar (100% y 80% MLW)
     porcentajes_mlw = [100, 80]
 
-    # Generación y formato del gráfico
     plt.figure(figsize=(11, 6))
 
     for avion in lista_aviones:
-        for porcentaje in porcentajes_mlw: # Evalua los dos pesos pedidos (100% y 80%)
-            x_pts, h_pts, _, _ = simular_cdo(avion, porcentaje) # Cogemos las 2 listas que nos interesan para el gráfico (distancia y altura)
+        for porcentaje in porcentajes_mlw:
+            x_pts, h_pts, _, _ = simular_cdo(avion, porcentaje)
             plt.plot(x_pts, h_pts, label=f"{avion.nombre} [{porcentaje}% MLW]", linewidth=1.2)
 
     plt.title("Perfiles de Descenso Continuo (CDO) al IAF (x = 0 m, h = 6000 ft)")
